@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Ide Menu Masakan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Animasi loading sederhana */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid currentColor;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Menghilangkan panah default pada detail summary */
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <header class="bg-indigo-600 text-white p-4 shadow-md sticky top-0 z-10">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <h1 class="text-2xl font-bold flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Ide Menu Masakan (AI Powered)
+            </h1>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+
+            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col h-full">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <div class="bg-orange-100 text-orange-600 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">Lauk Utama</h2>
+                </div>
+
+                <form id="formUtama" class="space-y-6 flex-grow">
+                    
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Bahan Dasar <span class="text-rose-500">*</span></label>
+                        <select id="bahanDasarUtama" class="w-full p-3 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition bg-slate-50" onchange="updateSubOpsiUtama()" required>
+                            <option value="">Pilih Bahan Dasar...</option>
+                            <option value="ikan">Ikan</option>
+                            <option value="ayam">Ayam</option>
+                            <option value="daging">Daging Sapi</option>
+                            <option value="lainnya">Lainnya (Ketik Sendiri)</option>
+                        </select>
+                        <input type="text" id="bahanDasarLainnyaUtama" class="hidden w-full mt-2 p-3 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition" placeholder="Contoh: Udang, Tahu, Tempe...">
+                    </div>
+
+                    <div id="containerSubOpsiUtama" class="hidden space-y-2">
+                        <label id="labelSubOpsiUtama" class="block text-sm font-semibold text-slate-700">Detail Potongan/Jenis</label>
+                        <input type="text" id="subOpsiUtama" class="w-full p-3 rounded-xl border border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition" placeholder="">
+                        <p class="text-xs text-slate-500 mt-1" id="hintSubOpsiUtama"></p>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-100">
+                        <label class="block text-sm font-semibold text-slate-700">Gaya Masakan</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="gayaUtama" value="Indonesia" class="peer sr-only">
+                                <div class="text-center p-3 rounded-xl border border-slate-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:bg-slate-50 transition">
+                                    Indonesia
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="gayaUtama" value="Chinese" class="peer sr-only">
+                                <div class="text-center p-3 rounded-xl border border-slate-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:bg-slate-50 transition">
+                                    Chinese
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="gayaUtama" value="Western" class="peer sr-only">
+                                <div class="text-center p-3 rounded-xl border border-slate-200 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 hover:bg-slate-50 transition">
+                                    Western
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                        <div class="space-y-3 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                            <label class="block text-sm font-semibold text-emerald-800"> Prioritas Cara Masak <br><span class="text-xs font-normal text-emerald-600">(Boleh pilih >1)</span></label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="prioritasUtama-digoreng" value="Digoreng / Ditumis" class="peer w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('digoreng')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Digoreng / Ditumis</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="prioritasUtama-dibakar" value="Dibakar/Panggang" class="peer w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('dibakar')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Dibakar / Panggang</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="prioritasUtama-direbus" value="Direbus/Kukus" class="peer w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('direbus')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Direbus / Kukus</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="prioritasUtama-kuahsantan" value="Kuah Santan" class="peer w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('kuahsantan')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Kuah Santan</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 bg-rose-50/50 p-4 rounded-xl border border-rose-100">
+                            <label class="block text-sm font-semibold text-rose-800"> Hindari Cara Masak <br><span class="text-xs font-normal text-rose-600">(Otomatis disable)</span></label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="hindariUtama-digoreng" value="Digoreng / Ditumis" class="peer w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('digoreng')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Digoreng / Ditumis</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="hindariUtama-dibakar" value="Dibakar/Panggang" class="peer w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('dibakar')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Dibakar / Panggang</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="hindariUtama-direbus" value="Direbus/Kukus" class="peer w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('direbus')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Direbus / Kukus</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="hindariUtama-kuahsantan" value="Kuah Santan" class="peer w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictUtama('kuahsantan')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Kuah Santan</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-100">
+                        <label class="block text-sm font-semibold text-slate-700">Ketersediaan Bumbu Dapur <span class="text-xs font-normal text-slate-500">(Hapus centang jika tidak punya)</span></label>
+                        <details class="group bg-white rounded-xl border border-slate-200 shadow-sm">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer p-3 text-sm text-indigo-700 hover:bg-indigo-50 transition rounded-xl group-open:rounded-b-none group-open:border-b group-open:bg-indigo-50">
+                                <span class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                    Ceklis Bumbu & Rempah (Lauk)
+                                </span>
+                                <span class="transition-transform duration-300 group-open:rotate-180">
+                                    <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M6 9l6 6 6-6"></path></svg>
+                                </span>
+                            </summary>
+                            <div id="containerBumbuLauk" class="p-4 bg-slate-50 max-h-64 overflow-y-auto text-xs"></div>
+                        </details>
+                    </div>
+
+                </form>
+
+                <div class="pt-6 mt-auto">
+                    <button type="button" id="btnLauk" onclick="generateMenu('lauk')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 flex justify-center items-center">
+                        <span id="btnTextLauk">Cari 10 Rekomendasi Lauk (AI)</span>
+                    </button>
+                    <div id="resultLauk" class="hidden mt-4 p-5 bg-indigo-50/50 border border-indigo-200 rounded-xl text-slate-800 text-sm leading-relaxed">
+                    </div>
+                </div>
+            </section>
+
+
+            <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col h-full">
+                <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+                    <div class="bg-green-100 text-green-600 p-2 rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">Menu Sayur / Pendamping</h2>
+                </div>
+
+                <form id="formSayur" class="space-y-6 flex-grow">
+                    
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-slate-700">Jenis Sayuran Utama <span class="text-rose-500">*</span></label>
+                        <input type="text" id="bahanDasarSayur" class="w-full p-3 rounded-xl border border-slate-300 focus:border-green-500 focus:ring-2 focus:ring-green-200 transition" placeholder="Ketik sayur (misal: Bayam, Kangkung, Buncis)">
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-100">
+                        <label class="block text-sm font-semibold text-slate-700">Gaya Masakan</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="gayaSayur" value="Indonesia" class="peer sr-only">
+                                <div class="text-center p-3 rounded-xl border border-slate-200 peer-checked:border-green-600 peer-checked:bg-green-50 peer-checked:text-green-700 hover:bg-slate-50 transition">Indonesia</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="gayaSayur" value="Chinese" class="peer sr-only">
+                                <div class="text-center p-3 rounded-xl border border-slate-200 peer-checked:border-green-600 peer-checked:bg-green-50 peer-checked:text-green-700 hover:bg-slate-50 transition">Chinese</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="gayaSayur" value="Western" class="peer sr-only">
+                                <div class="text-center p-3 rounded-xl border border-slate-200 peer-checked:border-green-600 peer-checked:bg-green-50 peer-checked:text-green-700 hover:bg-slate-50 transition">Western</div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                        <div class="space-y-3 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                            <label class="block text-sm font-semibold text-emerald-800"> Prioritas Cara Masak <br><span class="text-xs font-normal text-emerald-600">(Boleh pilih >1)</span></label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="prioritasSayur-ditumis" value="Ditumis/Oseng" class="peer w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictSayur('ditumis')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Ditumis (Oseng)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="prioritasSayur-berkuah" value="Berkuah Bening" class="peer w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictSayur('berkuah')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Berkuah Bening</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="prioritasSayur-kuahsantan" value="Kuah Santan" class="peer w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictSayur('kuahsantan')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Kuah Santan</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 bg-rose-50/50 p-4 rounded-xl border border-rose-100">
+                            <label class="block text-sm font-semibold text-rose-800"> Hindari Cara Masak <br><span class="text-xs font-normal text-rose-600">(Otomatis disable)</span></label>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="hindariSayur-ditumis" value="Ditumis/Oseng" class="peer w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictSayur('ditumis')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Ditumis (Oseng)</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="hindariSayur-berkuah" value="Berkuah Bening" class="peer w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictSayur('berkuah')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Berkuah Bening</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" id="hindariSayur-kuahsantan" value="Kuah Santan" class="peer w-4 h-4 text-rose-600 rounded border-slate-300 focus:ring-rose-500 disabled:opacity-50 disabled:cursor-not-allowed" onchange="handleConflictSayur('kuahsantan')">
+                                    <span class="text-sm text-slate-700 peer-disabled:text-slate-400">Kuah Santan</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-4 border-t border-slate-100">
+                        <label class="block text-sm font-semibold text-slate-700">Ketersediaan Bumbu Dapur <span class="text-xs font-normal text-slate-500">(Hapus centang jika tidak punya)</span></label>
+                        <details class="group bg-white rounded-xl border border-slate-200 shadow-sm">
+                            <summary class="flex justify-between items-center font-medium cursor-pointer p-3 text-sm text-green-700 hover:bg-green-50 transition rounded-xl group-open:rounded-b-none group-open:border-b group-open:bg-green-50">
+                                <span class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                    Ceklis Bumbu & Rempah (Sayur)
+                                </span>
+                                <span class="transition-transform duration-300 group-open:rotate-180">
+                                    <svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="20"><path d="M6 9l6 6 6-6"></path></svg>
+                                </span>
+                            </summary>
+                            <div id="containerBumbuSayur" class="p-4 bg-slate-50 max-h-64 overflow-y-auto text-xs"></div>
+                        </details>
+                    </div>
+
+                </form>
+
+                <div class="pt-6 mt-auto">
+                    <button type="button" id="btnSayur" onclick="generateMenu('sayur')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 flex justify-center items-center">
+                        <span id="btnTextSayur">Cari 10 Rekomendasi Sayur (AI)</span>
+                    </button>
+                    <div id="resultSayur" class="hidden mt-4 p-5 bg-green-50/50 border border-green-200 rounded-xl text-slate-800 text-sm leading-relaxed">
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <script>
+        // --- DATA BUMBU & REMPAH ---
+        const masterBumbu = {
+            "Bumbu Dasar": ["Bawang Merah", "Bawang Putih", "Cabai Rawit", "Cabai Rawit Hijau", "Cabe Merah Keriting"],
+            "Rimpang": ["Jahe", "Kunyit", "Lengkuas", "Kencur", "Temu Kunci", "Temulawak"],
+            "Daun Aromatik": ["Daun Salam", "Daun Jeruk", "Sereh", "Daun Kunyit", "Daun Bawang", "Selederi", "Kemangi", "Pandan", "Daun Kari"],
+            "Rempah": ["Ketumbar", "Kemiri", "Lada", "Pala", "Cengkeh", "Jinten", "Kapulaga", "Bunga Lawang"],
+            "Penyedap": ["Gula", "Garam", "Gula Merah", "Asam Jawa", "Terasi", "Jeruk Nipis", "Jeruk Limau", "Mecin"]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderBumbuList('containerBumbuLauk', 'cb-bumbu-lauk', 'indigo');
+            renderBumbuList('containerBumbuSayur', 'cb-bumbu-sayur', 'green');
+        });
+
+        function renderBumbuList(containerId, inputClass, accentColor) {
+            const container = document.getElementById(containerId);
+            let html = '';
+            for (const [kategori, items] of Object.entries(masterBumbu)) {
+                html += `
+                <div class="mb-4 last:mb-0">
+                    <h4 class="font-semibold text-slate-700 mb-2 border-b border-slate-200 pb-1">${kategori}</h4>
+                    <div class="grid grid-cols-3 gap-2">
+                        ${items.map(item => `
+                            <label class="flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 p-1 rounded transition">
+                                <input type="checkbox" value="${item}" class="${inputClass} w-3.5 h-3.5 text-${accentColor}-600 rounded border-slate-300 focus:ring-${accentColor}-500" checked>
+                                <span class="truncate text-slate-600" title="${item}">${item}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        const apiKey = ""; // Disediakan oleh environment runtime
+        const modelEndpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent";
+
+        // Fungsi fetch API Gemini - Disesuaikan untuk generate format UI yang spesifik
+        async function fetchGeminiAI(promptText, tipe) {
+            const url = `${modelEndpoint}?key=${apiKey}`;
+            const accent = tipe === 'lauk' ? 'indigo' : 'green';
+            
+            // Format instruksi super spesifik agar AI mengembalikan komponen HTML yang rapi
+            const systemInst = `Anda adalah asisten koki cerdas. Berikan TEPAT 10 ide masakan. 
+Jawablah LANGSUNG dalam format HTML murni (tanpa blok markdown \`\`\`html) dengan struktur INI untuk setiap menu (jangan diubah strukturnya):
+
+<div class="mb-4 bg-white border border-${accent}-200 rounded-xl p-4 shadow-sm">
+    <h3 class="font-bold text-${accent}-800 text-lg">1. [Nama Menu]</h3>
+    <p class="text-sm text-slate-600 mt-1 mb-3">[Overview/Deskripsi rasa dalam 1 kalimat pendek]</p>
+    <details class="group">
+        <summary class="inline-block cursor-pointer bg-${accent}-600 text-white hover:bg-${accent}-700 text-xs font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm" style="list-style: none;">
+            Bahan & Cara Buat ▾
+        </summary>
+        <div class="mt-4 pt-4 border-t border-${accent}-100 text-sm text-slate-700 space-y-3">
+            <div><strong class="text-slate-800">Bahan-bahan:</strong><ul class="list-disc pl-5 mt-1"><li>[Bahan 1]</li></ul></div>
+            <div><strong class="text-slate-800">Cara Membuat:</strong><ol class="list-decimal pl-5 mt-1"><li>[Langkah 1]</li></ol></div>
+        </div>
+    </details>
+</div>`;
+
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }],
+                systemInstruction: { parts: [{ text: systemInst }] }
+            };
+
+            const maxRetries = 5;
+            const delays = [1000, 2000, 4000, 8000, 16000];
+
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    
+                    const data = await response.json();
+                    return data.candidates[0].content.parts[0].text;
+                } catch (error) {
+                    if (i === maxRetries - 1) {
+                        console.error("Gagal menghubungi AI:", error);
+                        return "<div class='text-rose-600 font-semibold'>Gagal mendapatkan rekomendasi. Silakan coba lagi nanti.</div>";
+                    }
+                    await new Promise(resolve => setTimeout(resolve, delays[i]));
+                }
+            }
+        }
+
+        async function generateMenu(tipe) {
+            let btnId, btnTextId, resultId, promptText;
+            
+            if (tipe === 'lauk') {
+                const bahanUtamaSelect = document.getElementById('bahanDasarUtama').value;
+                let bahan = bahanUtamaSelect;
+                if (bahanUtamaSelect === 'lainnya') bahan = document.getElementById('bahanDasarLainnyaUtama').value;
+                
+                if (!bahan || bahan.trim() === '') {
+                    alert("Mohon pilih atau ketik bahan dasar Lauk terlebih dahulu!");
+                    return;
+                }
+                
+                const subOpsi = document.getElementById('subOpsiUtama').value;
+                if (subOpsi) bahan += ` (potongan/jenis: ${subOpsi})`;
+
+                const gaya = document.querySelector('input[name="gayaUtama"]:checked')?.value || 'Bebas/Campur';
+                const prioritas = Array.from(document.querySelectorAll('[id^="prioritasUtama-"]:checked')).map(el => el.value).join(', ') || 'Bebas';
+                const hindari = Array.from(document.querySelectorAll('[id^="hindariUtama-"]:checked')).map(el => el.value).join(', ') || 'Tidak ada';
+                const tanpaBahan = Array.from(document.querySelectorAll('.cb-bumbu-lauk:not(:checked)')).map(el => el.value).join(', ') || 'Tidak ada (Semua bumbu tersedia)';
+
+                promptText = `Tolong berikan TEPAT 10 ide resep LAUK UTAMA dengan kriteria:\n- Bahan dasar: ${bahan}\n- Gaya: ${gaya}\n- Wajib dimasak dengan cara: ${prioritas}\n- Pantangan masak (JANGAN DILAKUKAN): ${hindari}\n- JANGAN GUNAKAN bumbu/bahan ini: ${tanpaBahan}.`;
+                
+                btnId = 'btnLauk'; btnTextId = 'btnTextLauk'; resultId = 'resultLauk';
+            } 
+            else if (tipe === 'sayur') {
+                const bahanSayur = document.getElementById('bahanDasarSayur').value;
+                if (!bahanSayur || bahanSayur.trim() === '') {
+                    alert("Mohon ketik jenis sayuran utama terlebih dahulu!");
+                    return;
+                }
+
+                const gaya = document.querySelector('input[name="gayaSayur"]:checked')?.value || 'Bebas/Campur';
+                const prioritas = Array.from(document.querySelectorAll('[id^="prioritasSayur-"]:checked')).map(el => el.value).join(', ') || 'Bebas';
+                const hindari = Array.from(document.querySelectorAll('[id^="hindariSayur-"]:checked')).map(el => el.value).join(', ') || 'Tidak ada';
+                const tanpaBahan = Array.from(document.querySelectorAll('.cb-bumbu-sayur:not(:checked)')).map(el => el.value).join(', ') || 'Tidak ada (Semua bumbu tersedia)';
+
+                promptText = `Tolong berikan TEPAT 10 ide resep SAYUR / PENDAMPING dengan kriteria:\n- Sayur utama: ${bahanSayur}\n- Gaya: ${gaya}\n- Wajib dimasak dengan cara: ${prioritas}\n- Pantangan masak (JANGAN DILAKUKAN): ${hindari}\n- JANGAN GUNAKAN bumbu/bahan ini: ${tanpaBahan}.`;
+                
+                btnId = 'btnSayur'; btnTextId = 'btnTextSayur'; resultId = 'resultSayur';
+            }
+
+            const btn = document.getElementById(btnId);
+            const btnText = document.getElementById(btnTextId);
+            const resultBox = document.getElementById(resultId);
+            const originalText = btnText.innerText;
+
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btnText.innerHTML = `<span class="loader"></span> Menyusun 10 Resep AI...`;
+            resultBox.classList.add('hidden');
+
+            // Panggil AI dan lemparkan tipe agar warna UI sesuai (Lauk = Indigo, Sayur = Green)
+            const aiResponseHtml = await fetchGeminiAI(promptText, tipe);
+
+            resultBox.innerHTML = `<div class="font-bold text-lg mb-4 pb-2 border-b ${tipe === 'lauk' ? 'border-indigo-200 text-indigo-800' : 'border-green-200 text-green-800'}">🎉 10 Pilihan Menu Berhasil Dibuat:</div>` + aiResponseHtml;
+            resultBox.classList.remove('hidden');
+
+            btn.disabled = false;
+            btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            btnText.innerText = originalText;
+        }
+
+        function updateSubOpsiUtama() {
+            const select = document.getElementById('bahanDasarUtama');
+            const nilai = select.value;
+            const containerSubOpsi = document.getElementById('containerSubOpsiUtama');
+            const inputSubOpsi = document.getElementById('subOpsiUtama');
+            const labelSubOpsi = document.getElementById('labelSubOpsiUtama');
+            const hintSubOpsi = document.getElementById('hintSubOpsiUtama');
+            const inputLainnya = document.getElementById('bahanDasarLainnyaUtama');
+
+            containerSubOpsi.classList.add('hidden');
+            inputLainnya.classList.add('hidden');
+            inputSubOpsi.value = '';
+
+            if (nilai === 'ikan') {
+                containerSubOpsi.classList.remove('hidden');
+                labelSubOpsi.textContent = 'Jenis Ikan';
+                inputSubOpsi.placeholder = 'Ketik jenis ikan...';
+                hintSubOpsi.textContent = 'Contoh: Ikan Bandeng, Lele, Nila, Salmon';
+            } else if (nilai === 'ayam') {
+                containerSubOpsi.classList.remove('hidden');
+                labelSubOpsi.textContent = 'Potongan Ayam';
+                inputSubOpsi.placeholder = 'Ketik potongan ayam...';
+                hintSubOpsi.textContent = 'Contoh: Paha Fillet, Dada Mentok, Sayap, Utuh';
+            } else if (nilai === 'daging') {
+                containerSubOpsi.classList.remove('hidden');
+                labelSubOpsi.textContent = 'Bagian/Potongan Daging';
+                inputSubOpsi.placeholder = 'Ketik bagian daging...';
+                hintSubOpsi.textContent = 'Contoh: Daging Sengkel, Sirloin, Iga, Cincang';
+            } else if (nilai === 'lainnya') {
+                inputLainnya.classList.remove('hidden');
+                inputLainnya.focus();
+            }
+        }
+
+        function handleConflictUtama(metode) {
+            const cbPrioritas = document.getElementById(`prioritasUtama-${metode}`);
+            const cbHindari = document.getElementById(`hindariUtama-${metode}`);
+            
+            cbHindari.disabled = cbPrioritas.checked;
+            cbPrioritas.disabled = cbHindari.checked;
+        }
+
+        function handleConflictSayur(metode) {
+            const cbPrioritas = document.getElementById(`prioritasSayur-${metode}`);
+            const cbHindari = document.getElementById(`hindariSayur-${metode}`);
+            
+            cbHindari.disabled = cbPrioritas.checked;
+            cbPrioritas.disabled = cbHindari.checked;
+        }
+    </script>
+</body>
+</html>
